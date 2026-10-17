@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "refinedstorage:item/wireless_grid/inactive"
+    "layer0": "cabletiers:item/wireless_pattern_grid/inactive"
   }
 }
