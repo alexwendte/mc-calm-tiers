@@ -350,6 +350,7 @@ public class ModInitializer extends AbstractModInitializer {
 
         if (e.getTabKey().equals(creativeModeTab)) {
             CreativeModeTabItems.appendBlocks(e::accept);
+            CreativeModeTabItems.appendItems(e::accept);
         } else if (e.getTabKey().equals(coloredCreativeModeTab)) {
             CreativeModeTabItems.appendColoredVariants(e::accept);
         }

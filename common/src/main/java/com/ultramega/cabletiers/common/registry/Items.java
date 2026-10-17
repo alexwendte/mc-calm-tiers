@@ -1,6 +1,8 @@
 package com.ultramega.cabletiers.common.registry;
 
 import com.refinedmods.refinedstorage.common.support.BaseBlockItem;
+import net.minecraft.world.item.Item;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +21,30 @@ public final class Items {
     private final List<Supplier<BaseBlockItem>> allTieredInterfaces = new ArrayList<>();
 
     private Items() {
+    }
+
+    @Nullable
+    private Supplier<Item> wirelessPatternGrid;
+
+    @Nullable
+    private Supplier<Item> creativeWirelessPatternGrid;
+
+    public void setWirelessPatternGrid(final Supplier<Item> supplier) {
+        this.wirelessPatternGrid = supplier;
+    }
+
+    public Item getWirelessPatternGrid() {
+        assert this.wirelessPatternGrid != null;
+        return this.wirelessPatternGrid.get();
+    }
+
+    public void setCreativeWirelessPatternGrid(final Supplier<Item> supplier) {
+        this.creativeWirelessPatternGrid = supplier;
+    }
+
+    public Item getCreativeWirelessPatternGrid() {
+        assert this.creativeWirelessPatternGrid != null;
+        return this.creativeWirelessPatternGrid.get();
     }
 
     public void addTieredImporter(final Supplier<BaseBlockItem> supplier) {

@@ -2,6 +2,9 @@ package com.ultramega.cabletiers.common;
 
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterBlockEntity;
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterContainerMenu;
+import com.ultramega.cabletiers.common.autocrafting.patterngrid.WirelessPatternGridContainerMenu;
+import com.ultramega.cabletiers.common.autocrafting.patterngrid.WirelessPatternGridData;
+import com.ultramega.cabletiers.common.autocrafting.patterngrid.WirelessPatternGridItem;
 import com.ultramega.cabletiers.common.autocrafting.sidedinput.SidedInputCodecs;
 import com.ultramega.cabletiers.common.autocrafting.sidedinput.SidedInputPatternState;
 import com.ultramega.cabletiers.common.constructordestructor.TieredConstructorContainerMenu;
@@ -75,6 +78,18 @@ public class AbstractModInitializer {
             Blocks.INSTANCE.getTieredAutocrafters(tier).registerItems(callback, Items.INSTANCE::addTieredAutocrafters);
             callback.register(ContentIds.getContentId(tier, CableType.INTERFACE), () -> Blocks.INSTANCE.getTieredInterfaces(tier).get().createBlockItem());
         }
+        Items.INSTANCE.setWirelessPatternGrid(
+            callback.register(
+                ContentIds.WIRELESS_PATTERN_GRID,
+                () -> new WirelessPatternGridItem(false)
+            ));
+
+        Items.INSTANCE.setCreativeWirelessPatternGrid(
+            callback.register(
+                ContentIds.CREATIVE_WIRELESS_PATTERN_GRID,
+                () -> new WirelessPatternGridItem(true)
+            )
+        );
     }
 
     protected final void registerBlockEntities(final RegistryCallback<BlockEntityType<?>> callback,
@@ -152,6 +167,11 @@ public class AbstractModInitializer {
                     new TieredInterfaceContainerMenu(syncId, inventory, containerData, tier), InterfaceData.STREAM_CODEC)
             ));
         }
+
+        Menus.INSTANCE.setWirelessPatternGrid(callback.register(
+            ContentIds.WIRELESS_PATTERN_GRID,
+            () -> extendedMenuTypeFactory.create(WirelessPatternGridContainerMenu::new, WirelessPatternGridData.STREAM_CODEC)
+        ));
     }
 
     protected final void registerDataComponents(final RegistryCallback<DataComponentType<?>> callback) {

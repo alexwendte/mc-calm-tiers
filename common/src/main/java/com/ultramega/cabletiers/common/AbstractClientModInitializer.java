@@ -1,8 +1,11 @@
 package com.ultramega.cabletiers.common;
 
+import com.refinedmods.refinedstorage.common.grid.WirelessGridContainerMenu;
+import com.refinedmods.refinedstorage.common.grid.screen.GridScreen;
 import com.ultramega.cabletiers.common.advancedfilter.AdvancedFilterScreen;
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterContainerMenu;
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterScreen;
+import com.ultramega.cabletiers.common.autocrafting.patterngrid.WirelessPatternGridContainerMenu;
 import com.ultramega.cabletiers.common.constructordestructor.TieredConstructorContainerMenu;
 import com.ultramega.cabletiers.common.constructordestructor.TieredConstructorScreen;
 import com.ultramega.cabletiers.common.constructordestructor.TieredDestructorContainerMenu;
@@ -50,6 +53,8 @@ public abstract class AbstractClientModInitializer {
                 (containerMenu, inventory, title) ->
                     new TieredInterfaceScreen(containerMenu, inventory, title, tier));
         }
+        
+        registration.register(Menus.INSTANCE.getWirelessPatternGrid(), GridScreen<WirelessPatternGridContainerMenu>::new);
     }
 
     public static void openAdvancedFilterScreen(final int slotIndex,

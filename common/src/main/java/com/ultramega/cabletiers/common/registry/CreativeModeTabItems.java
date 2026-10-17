@@ -24,6 +24,12 @@ public final class CreativeModeTabItems {
         }
     }
 
+    public static void appendItems(final Consumer<ItemStack> consumer) {
+        consumer.accept(new ItemStack(Items.INSTANCE.getWirelessPatternGrid()));
+        consumer.accept(new ItemStack(Items.INSTANCE.getCreativeWirelessPatternGrid()));
+    }
+
+
     private static void appendDefaultBlockColor(final Consumer<ItemStack> consumer, final BlockColorMap<?, ?> map) {
         consumer.accept(new ItemStack(map.getDefault()));
     }

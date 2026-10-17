@@ -1,7 +1,10 @@
 package com.ultramega.cabletiers.common.registry;
 
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.WirelessAutocraftingMonitorContainerMenu;
 import com.ultramega.cabletiers.common.CableTiers;
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterContainerMenu;
+import com.ultramega.cabletiers.common.autocrafting.patterngrid.WirelessPatternGridContainerMenu;
 import com.ultramega.cabletiers.common.constructordestructor.TieredConstructorContainerMenu;
 import com.ultramega.cabletiers.common.constructordestructor.TieredDestructorContainerMenu;
 import com.ultramega.cabletiers.common.exporter.TieredExporterContainerMenu;
@@ -14,6 +17,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import net.minecraft.world.inventory.MenuType;
+import org.jspecify.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,6 +31,8 @@ public final class Menus {
     private final Map<CableTiers, Supplier<MenuType<TieredDiskInterfaceContainerMenu>>> tieredDiskInterfaces = new HashMap<>();
     private final Map<CableTiers, Supplier<MenuType<TieredAutocrafterContainerMenu>>> tieredAutocrafters = new HashMap<>();
     private final Map<CableTiers, Supplier<MenuType<TieredInterfaceContainerMenu>>> tieredInterfaces = new HashMap<>();
+    @Nullable
+    private Supplier<MenuType<WirelessPatternGridContainerMenu>> wirelessPatternGrid;
 
     public void setTieredImporters(final CableTiers tier,
                                    final Supplier<MenuType<TieredImporterContainerMenu>> supplier) {
@@ -89,5 +95,15 @@ public final class Menus {
 
     public MenuType<TieredInterfaceContainerMenu> getTieredInterfaces(final CableTiers tier) {
         return requireNonNull(this.tieredInterfaces).get(tier).get();
+    }
+
+    public MenuType<WirelessPatternGridContainerMenu> getWirelessPatternGrid() {
+        return requireNonNull(wirelessPatternGrid).get();
+    }
+
+    public void setWirelessPatternGrid(
+        final Supplier<MenuType<WirelessPatternGridContainerMenu>> wirelessPatternGrid
+    ) {
+        this.wirelessPatternGrid = wirelessPatternGrid;
     }
 }
