@@ -40,19 +40,25 @@ class WirelessCraftingGridOperations implements GridOperations {
         return success;
     }
 
-    /**
-     * Tries to move a resource from the source to the network storage.
-     * The amount being inserted depends on the insert mode.
-     *
-     * @param resource   the resource
-     * @param insertMode the insertion mode
-     * @param source     the source
-     */
+    /// Inserts the given resource into the given storage (I think it is the network storage itself - I don't think it is an external machine for example)
+    /// I don't think an amount is configured but the insertMode
+    /// I wonder if the GridInsertMode is left click (all) or right click (one)
+    ///
+    /// @param resource   the resource
+    /// @param insertMode the insertion mode
+    /// @param source     the source
+    /// @return
     @Override
-    public boolean insert(ResourceKey resource, GridInsertMode insertMode, ExtractableStorage source) {
-        return false;
+    public boolean insert(final ResourceKey resource,
+                          final GridInsertMode insertMode,
+                          final ExtractableStorage source) {
+        final boolean success = delegate.insert(resource, insertMode, source);
+        if (success) {
+            drain(Platform.INSTANCE.getConfig().getWirelessGrid().getInsertEnergyUsage());
+        }
+        return success;
     }
-    
+
     private void drain(final long amount) {
         final boolean wasActive = context.isActive();
         context.drainEnergy(amount);

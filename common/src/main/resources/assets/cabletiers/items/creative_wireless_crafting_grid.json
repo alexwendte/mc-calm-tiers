@@ -3,11 +3,11 @@
     "type": "minecraft:condition",
     "on_false": {
       "type": "minecraft:model",
-      "model": "cabletiers:item/wireless_pattern_grid/inactive"
+      "model": "cabletiers:item/wireless_crafting_grid/inactive"
     },
     "on_true": {
       "type": "minecraft:model",
-      "model": "cabletiers:item/wireless_pattern_grid/active"
+      "model": "cabletiers:item/wireless_crafting_grid/active"
     },
     "property": "refinedstorage:network_bound"
   }

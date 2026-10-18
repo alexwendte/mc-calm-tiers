@@ -13,8 +13,8 @@ import static com.ultramega.cabletiers.common.utils.CableTiersIdentifierUtil.cre
 
 public final class ContentIds {
     private static final Map<CableTiers, Map<CableType, Identifier>> CONTENT_MAP = new EnumMap<>(CableTiers.class);
-    public static final Identifier WIRELESS_PATTERN_GRID = createCableTiersIdentifier("wireless_pattern_grid");
-    public static final Identifier CREATIVE_WIRELESS_PATTERN_GRID = createCableTiersIdentifier("creative_wireless_pattern_grid");
+    public static final Identifier WIRELESS_CRAFTING_GRID = createCableTiersIdentifier("wireless_crafting_grid");
+    public static final Identifier CREATIVE_WIRELESS_CRAFTING_GRID = createCableTiersIdentifier("creative_wireless_crafting_grid");
 
     private ContentIds() {
     }

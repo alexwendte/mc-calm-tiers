@@ -1,5 +1,6 @@
 package com.ultramega.cabletiers.common.registry;
 
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.ultramega.cabletiers.common.CableTiers;
 
 import com.refinedmods.refinedstorage.common.content.BlockColorMap;
@@ -24,9 +25,17 @@ public final class CreativeModeTabItems {
         }
     }
 
+    //public static void appendItems(final Consumer<ItemStack> consumer) {
+    //    consumer.accept(new ItemStack(Items.INSTANCE.getWirelessPatternGrid()));
+    //    consumer.accept(new ItemStack(Items.INSTANCE.getCreativeWirelessPatternGrid()));
+    //}
+
     public static void appendItems(final Consumer<ItemStack> consumer) {
-        consumer.accept(new ItemStack(Items.INSTANCE.getWirelessPatternGrid()));
-        consumer.accept(new ItemStack(Items.INSTANCE.getCreativeWirelessPatternGrid()));
+        consumer.accept(Items.INSTANCE.getWirelessCraftingGrid().getDefaultInstance());
+        if (RefinedStorageApi.INSTANCE.isEnergyRequired()) {
+            consumer.accept(Items.INSTANCE.getWirelessCraftingGrid().createAtEnergyCapacity());
+            consumer.accept(Items.INSTANCE.getCreativeWirelessCraftingGrid().getDefaultInstance());
+        }
     }
 
 

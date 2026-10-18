@@ -1,5 +1,6 @@
 package com.ultramega.cabletiers.common;
 
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.grid.screen.GridScreen;
 import com.ultramega.cabletiers.common.advancedfilter.AdvancedFilterScreen;
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterContainerMenu;
@@ -14,14 +15,17 @@ import com.ultramega.cabletiers.common.iface.TieredInterfaceContainerMenu;
 import com.ultramega.cabletiers.common.iface.TieredInterfaceScreen;
 import com.ultramega.cabletiers.common.importer.TieredImporterContainerMenu;
 import com.ultramega.cabletiers.common.importer.TieredImporterScreen;
+import com.ultramega.cabletiers.common.registry.Items;
 import com.ultramega.cabletiers.common.registry.Menus;
 import com.ultramega.cabletiers.common.storage.diskinterface.TieredDiskInterfaceContainerMenu;
 import com.ultramega.cabletiers.common.storage.diskinterface.TieredDiskInterfaceScreen;
 
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.player.Player;
 import org.jspecify.annotations.Nullable;
 
 import static com.ultramega.cabletiers.common.utils.CableTiersIdentifierUtil.createCableTiersTranslation;
@@ -52,7 +56,7 @@ public abstract class AbstractClientModInitializer {
                     new TieredInterfaceScreen(containerMenu, inventory, title, tier));
         }
 
-        registration.register(Menus.INSTANCE.getWirelessPatternGrid(), GridScreen<WirelessPatternGridContainerMenu>::new);
+        //registration.register(Menus.INSTANCE.getWirelessPatternGrid(), GridScreen<WirelessPatternGridContainerMenu>::new);
     }
 
     public static void openAdvancedFilterScreen(final int slotIndex,
@@ -72,4 +76,19 @@ public abstract class AbstractClientModInitializer {
             createCableTiersTranslation("gui", "advanced_filter.tag_filter")
         ));
     }
+
+    //protected static void handleInputEvents() {
+    //    final Player player = Minecraft.getInstance().player;
+    //    if (player == null) {
+    //        return;
+    //    }
+    //    final KeyMapping openWirelessCraftingGrid = KeyMappings.INSTANCE.getOpenWirelessCraftingGrid();
+    //    while (openWirelessCraftingGrid != null && openWirelessCraftingGrid.consumeClick()) {
+    //        RefinedStorageApi.INSTANCE.usePlayerSlotReferencedItem(
+    //            player,
+    //            Items.INSTANCE.getWirelessCraftingGrid(),
+    //            Items.INSTANCE.getCreativeWirelessCraftingGrid()
+    //        );
+    //    }
+    //}
 }

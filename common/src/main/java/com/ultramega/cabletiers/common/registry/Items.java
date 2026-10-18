@@ -1,6 +1,7 @@
 package com.ultramega.cabletiers.common.registry;
 
 import com.refinedmods.refinedstorage.common.support.BaseBlockItem;
+import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridItem;
 import net.minecraft.world.item.Item;
 import org.jspecify.annotations.Nullable;
 
@@ -8,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+
+import static java.util.Objects.requireNonNull;
 
 public final class Items {
     public static final Items INSTANCE = new Items();
@@ -23,28 +26,50 @@ public final class Items {
     private Items() {
     }
 
-    @Nullable
-    private Supplier<Item> wirelessPatternGrid;
 
     @Nullable
-    private Supplier<Item> creativeWirelessPatternGrid;
+    private Supplier<WirelessCraftingGridItem> wirelessCraftingGrid;
+    @Nullable
+    private Supplier<WirelessCraftingGridItem> creativeWirelessCraftingGrid;
 
-    public void setWirelessPatternGrid(final Supplier<Item> supplier) {
-        this.wirelessPatternGrid = supplier;
+    //@Nullable
+    //private Supplier<Item> wirelessPatternGrid;
+    //
+    //@Nullable
+    //private Supplier<Item> creativeWirelessPatternGrid;
+
+    //public void setWirelessPatternGrid(final Supplier<Item> supplier) {
+    //    this.wirelessPatternGrid = supplier;
+    //}
+    //
+    //public Item getWirelessPatternGrid() {
+    //    assert this.wirelessPatternGrid != null;
+    //    return this.wirelessPatternGrid.get();
+    //}
+    //
+    //public void setCreativeWirelessPatternGrid(final Supplier<Item> supplier) {
+    //    this.creativeWirelessPatternGrid = supplier;
+    //}
+    //
+    //public Item getCreativeWirelessPatternGrid() {
+    //    assert this.creativeWirelessPatternGrid != null;
+    //    return this.creativeWirelessPatternGrid.get();
+    //}
+
+    public WirelessCraftingGridItem getWirelessCraftingGrid() {
+        return requireNonNull(wirelessCraftingGrid).get();
     }
 
-    public Item getWirelessPatternGrid() {
-        assert this.wirelessPatternGrid != null;
-        return this.wirelessPatternGrid.get();
+    public void setWirelessCraftingGrid(final Supplier<WirelessCraftingGridItem> supplier) {
+        this.wirelessCraftingGrid = supplier;
     }
 
-    public void setCreativeWirelessPatternGrid(final Supplier<Item> supplier) {
-        this.creativeWirelessPatternGrid = supplier;
+    public WirelessCraftingGridItem getCreativeWirelessCraftingGrid() {
+        return requireNonNull(creativeWirelessCraftingGrid).get();
     }
 
-    public Item getCreativeWirelessPatternGrid() {
-        assert this.creativeWirelessPatternGrid != null;
-        return this.creativeWirelessPatternGrid.get();
+    public void setCreativeWirelessCraftingGrid(final Supplier<WirelessCraftingGridItem> supplier) {
+        this.creativeWirelessCraftingGrid = supplier;
     }
 
     public void addTieredImporter(final Supplier<BaseBlockItem> supplier) {

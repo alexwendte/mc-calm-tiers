@@ -2,6 +2,7 @@ package com.ultramega.cabletiers.common.registry;
 
 import com.ultramega.cabletiers.common.CableTiers;
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterContainerMenu;
+import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridContainerMenu;
 import com.ultramega.cabletiers.common.constructordestructor.TieredConstructorContainerMenu;
 import com.ultramega.cabletiers.common.constructordestructor.TieredDestructorContainerMenu;
 import com.ultramega.cabletiers.common.exporter.TieredExporterContainerMenu;
@@ -29,7 +30,7 @@ public final class Menus {
     private final Map<CableTiers, Supplier<MenuType<TieredAutocrafterContainerMenu>>> tieredAutocrafters = new HashMap<>();
     private final Map<CableTiers, Supplier<MenuType<TieredInterfaceContainerMenu>>> tieredInterfaces = new HashMap<>();
     @Nullable
-    private Supplier<MenuType<WirelessPatternGridContainerMenu>> wirelessPatternGrid;
+    private Supplier<MenuType<WirelessCraftingGridContainerMenu>> wirelessCraftingGrid;
 
     public void setTieredImporters(final CableTiers tier,
                                    final Supplier<MenuType<TieredImporterContainerMenu>> supplier) {
@@ -94,13 +95,11 @@ public final class Menus {
         return requireNonNull(this.tieredInterfaces).get(tier).get();
     }
 
-    public MenuType<WirelessPatternGridContainerMenu> getWirelessPatternGrid() {
-        return requireNonNull(wirelessPatternGrid).get();
+    public void setWirelessCraftingGrid(final Supplier<MenuType<WirelessCraftingGridContainerMenu>> supplier) {
+        this.wirelessCraftingGrid = supplier;
     }
 
-    public void setWirelessPatternGrid(
-        final Supplier<MenuType<WirelessPatternGridContainerMenu>> wirelessPatternGrid
-    ) {
-        this.wirelessPatternGrid = wirelessPatternGrid;
+    public MenuType<WirelessCraftingGridContainerMenu> getWirelessCraftingGrid() {
+        return requireNonNull(wirelessCraftingGrid).get();
     }
 }

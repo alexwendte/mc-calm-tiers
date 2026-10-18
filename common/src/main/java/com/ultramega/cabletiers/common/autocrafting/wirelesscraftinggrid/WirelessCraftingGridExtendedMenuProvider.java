@@ -1,5 +1,8 @@
 package com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid;
 
+import com.refinedmods.refinedstorage.common.api.support.slotreference.PlayerSlotReference;
+import com.refinedmods.refinedstorage.common.grid.CraftingGrid;
+import com.refinedmods.refinedstorage.common.grid.GridData;
 import com.refinedmods.refinedstorage.common.support.containermenu.ExtendedMenuProvider;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -10,30 +13,39 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jspecify.annotations.Nullable;
 
 public class WirelessCraftingGridExtendedMenuProvider implements ExtendedMenuProvider<WirelessCraftingGridData> {
-    /// @return
+    private final Component name;
+    private final CraftingGrid craftingGrid;
+    private final PlayerSlotReference playerSlotReference;
+
+    WirelessCraftingGridExtendedMenuProvider(final Component name,
+                                             final CraftingGrid craftingGrid,
+                                             final PlayerSlotReference playerSlotReference) {
+        this.name = name;
+        this.craftingGrid = craftingGrid;
+        this.playerSlotReference = playerSlotReference;
+    }
+
     @Override
     public WirelessCraftingGridData getMenuData() {
-        return null;
+        return new WirelessCraftingGridData(
+            GridData.of(craftingGrid),
+            playerSlotReference
+        );
     }
 
-    /// @return
     @Override
     public StreamEncoder<RegistryFriendlyByteBuf, WirelessCraftingGridData> getMenuCodec() {
-        return null;
+        return WirelessCraftingGridData.STREAM_CODEC;
     }
 
-    /// @return
+
     @Override
     public Component getDisplayName() {
-        return null;
+        return name;
     }
 
-    /// @param i
-    /// @param inventory
-    /// @param player
-    /// @return
     @Override
-    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-        return null;
+    public AbstractContainerMenu createMenu(final int syncId, final Inventory inventory, final Player player) {
+        return new WirelessCraftingGridContainerMenu(syncId, inventory, craftingGrid, playerSlotReference);
     }
 }

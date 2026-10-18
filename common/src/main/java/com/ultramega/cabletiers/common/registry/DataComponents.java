@@ -4,6 +4,7 @@ import com.ultramega.cabletiers.common.autocrafting.sidedinput.SidedInputPattern
 
 import java.util.function.Supplier;
 
+import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridState;
 import net.minecraft.core.component.DataComponentType;
 import org.jspecify.annotations.Nullable;
 
@@ -15,6 +16,9 @@ public final class DataComponents {
     @Nullable
     private Supplier<DataComponentType<SidedInputPatternState>> sidedInputPatternState;
 
+    @Nullable
+    private Supplier<DataComponentType<WirelessCraftingGridState>> wirelessCraftingGridState;
+
     private DataComponents() {
     }
 
@@ -24,5 +28,15 @@ public final class DataComponents {
 
     public void setSidedInputPatternState(@Nullable final Supplier<DataComponentType<SidedInputPatternState>> supplier) {
         this.sidedInputPatternState = supplier;
+    }
+
+    public DataComponentType<WirelessCraftingGridState> getWirelessCraftingGridState() {
+        return requireNonNull(wirelessCraftingGridState).get();
+    }
+
+    public void setWirelessCraftingGridState(
+        @Nullable final Supplier<DataComponentType<WirelessCraftingGridState>> supplier
+    ) {
+        this.wirelessCraftingGridState = supplier;
     }
 }

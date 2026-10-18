@@ -3,6 +3,7 @@ package com.ultramega.cabletiers.fabric;
 import com.ultramega.cabletiers.common.CableTiers;
 import com.ultramega.cabletiers.common.CableType;
 import com.ultramega.cabletiers.common.DefaultConfig;
+import com.ultramega.cabletiers.common.DefaultEnergyUsage;
 import com.ultramega.cabletiers.common.utils.CableTiersIdentifierUtil;
 
 import me.shedaniel.autoconfig.AutoConfig;
@@ -33,6 +34,9 @@ public class ConfigImpl implements ConfigData, com.ultramega.cabletiers.common.C
 
     @ConfigEntry.Gui.CollapsibleObject
     private SimpleTieredInterfaceEntryImpl tieredInterfaces = new SimpleTieredInterfaceEntryImpl(CableType.INTERFACE);
+
+    @ConfigEntry.Gui.CollapsibleObject
+    private WirelessCraftingGridEntryEntryImpl wirelessCraftingGrid = new WirelessCraftingGridEntryEntryImpl();
 
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
@@ -71,6 +75,11 @@ public class ConfigImpl implements ConfigData, com.ultramega.cabletiers.common.C
     @Override
     public SimpleTieredInterfaceEntry getTieredInterfaces() {
         return this.tieredInterfaces;
+    }
+
+    @Override
+    public WirelessCraftingGridEntry getWirelessCraftingGrid() {
+        return wirelessCraftingGrid;
     }
 
     private static class SimpleTieredStackEntryImpl implements SimpleTieredStackEntry {
@@ -273,7 +282,8 @@ public class ConfigImpl implements ConfigData, com.ultramega.cabletiers.common.C
                 case ULTRA -> this.ultraPatternSlotCount;
                 case MEGA -> this.megaPatternSlotCount;
                 case CREATIVE -> this.creativePatternSlotCount;
-                default -> throw new UnsupportedOperationException(tier.getLowercaseName() + " has no pattern slot count config");
+                default ->
+                    throw new UnsupportedOperationException(tier.getLowercaseName() + " has no pattern slot count config");
             };
         }
     }
@@ -317,6 +327,46 @@ public class ConfigImpl implements ConfigData, com.ultramega.cabletiers.common.C
                 case MEGA -> this.megaSpeed;
                 case CREATIVE -> this.creativeSpeed;
             };
+        }
+    }
+
+    private static class WirelessCraftingGridEntryEntryImpl implements WirelessCraftingGridEntry {
+        @ConfigEntry.BoundedDiscrete(min = 1L, max = Long.MAX_VALUE)
+        private long energyCapacity = DefaultEnergyUsage.WIRELESS_CRAFTING_GRID_CAPACITY;
+        private long openEnergyUsage = DefaultEnergyUsage.WIRELESS_CRAFTING_GRID_OPEN;
+        private long craftingEnergyUsage = DefaultEnergyUsage.WIRELESS_CRAFTING_GRID_CRAFTING;
+        private long autocraftingEnergyUsage = DefaultEnergyUsage.WIRELESS_CRAFTING_GRID_AUTOCRAFTING;
+        private long clearMatrixEnergyUsage = DefaultEnergyUsage.WIRELESS_CRAFTING_GRID_CLEAR_MATRIX;
+        private long recipeTransferEnergyUsage = DefaultEnergyUsage.WIRELESS_CRAFTING_GRID_RECIPE_TRANSFER;
+
+        @Override
+        public long getEnergyCapacity() {
+            return energyCapacity;
+        }
+
+        @Override
+        public long getOpenEnergyUsage() {
+            return openEnergyUsage;
+        }
+
+        @Override
+        public long getCraftingEnergyUsage() {
+            return craftingEnergyUsage;
+        }
+
+        @Override
+        public long getAutocraftingEnergyUsage() {
+            return autocraftingEnergyUsage;
+        }
+
+        @Override
+        public long getClearMatrixEnergyUsage() {
+            return clearMatrixEnergyUsage;
+        }
+
+        @Override
+        public long getRecipeTransferEnergyUsage() {
+            return recipeTransferEnergyUsage;
         }
     }
 }

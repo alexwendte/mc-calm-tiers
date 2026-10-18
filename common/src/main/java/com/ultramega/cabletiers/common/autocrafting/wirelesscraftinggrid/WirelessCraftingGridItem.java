@@ -1,25 +1,57 @@
 package com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid;
 
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.security.SecurityHelper;
 import com.refinedmods.refinedstorage.common.api.support.energy.AbstractNetworkEnergyItem;
 import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemContext;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.PlayerSlotReference;
+import com.refinedmods.refinedstorage.common.grid.CraftingGrid;
+import com.refinedmods.refinedstorage.common.security.BuiltinPermission;
+import com.ultramega.cabletiers.common.utils.ContentIds;
+import com.ultramega.cabletiers.common.utils.ContentNames;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
 import org.jspecify.annotations.Nullable;
 
+import static java.util.Objects.requireNonNullElse;
+
 public class WirelessCraftingGridItem extends AbstractNetworkEnergyItem {
-    protected WirelessCraftingGridItem(Properties properties, EnergyItemHelper energyItemHelper, NetworkItemHelper helper) {
-        super(properties, energyItemHelper, helper);
+    private final boolean creative;
+
+    public WirelessCraftingGridItem(final boolean creative, final EnergyItemHelper energyItemHelper,
+                                    final NetworkItemHelper networkItemHelper) {
+        super(new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM,
+                creative ? ContentIds.CREATIVE_WIRELESS_CRAFTING_GRID : ContentIds.WIRELESS_CRAFTING_GRID)),
+            energyItemHelper, networkItemHelper);
+        this.creative = creative;
     }
 
-    /// @param name
-    /// @param player
-    /// @param playerSlotReference
-    /// @param context
     @Override
-    protected void use(@Nullable Component name, ServerPlayer player, PlayerSlotReference playerSlotReference, NetworkItemContext context) {
-
+    protected void use(@Nullable final Component name,
+                       final ServerPlayer player,
+                       final PlayerSlotReference playerSlotReference,
+                       final NetworkItemContext context) {
+        // I assume that this context.resolveNetwork is what checks if we are in range or not? It is `NetworkItemContext`
+        // how does it know if we are using creative grid or not? Or maybe a creative grid doesn't have unlimited range?
+        final boolean isAllowed = context.resolveNetwork()
+            .map(network -> SecurityHelper.isAllowed(player, BuiltinPermission.OPEN, network))
+            .orElse(true);
+        if (!isAllowed) {
+            RefinedStorageApi.INSTANCE.sendNoPermissionToOpenMessage(player, ContentNames.WIRELESS_CRAFTING_GRID);
+            return;
+        }
+        final CraftingGrid craftingGrid = new WirelessCraftingGrid(player, context, playerSlotReference);
+        final Component correctedName = requireNonNullElse(
+            name,
+            creative ? ContentNames.CREATIVE_WIRELESS_CRAFTING_GRID : ContentNames.WIRELESS_CRAFTING_GRID
+        );
+        final var provider = new WirelessCraftingGridExtendedMenuProvider(correctedName, craftingGrid,
+            playerSlotReference);
+        com.refinedmods.refinedstorage.common.Platform.INSTANCE.getMenuOpener().openMenu(player, provider);
     }
 }
