@@ -184,7 +184,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements Refine
             refinedStorageApi.getCreativeModeTabId()
         );
         CreativeModeTabEvents.modifyOutputEvent(creativeModeTab).register(
-            entries -> CreativeModeTabItems.appendBlocks(entries::accept)
+            entries -> {
+                CreativeModeTabItems.appendBlocks(entries::accept);
+                CreativeModeTabItems.appendItems(entries::accept);
+            }
         );
 
         final ResourceKey<CreativeModeTab> coloredCreativeModeTab = ResourceKey.create(

@@ -1,6 +1,10 @@
 package com.ultramega.cabletiers.neoforge;
 
-import com.ultramega.cabletiers.common.*;
+import com.ultramega.cabletiers.common.CableTiers;
+import com.ultramega.cabletiers.common.CableType;
+import com.ultramega.cabletiers.common.Config;
+import com.ultramega.cabletiers.common.DefaultConfig;
+import com.ultramega.cabletiers.common.DefaultEnergyUsage;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 

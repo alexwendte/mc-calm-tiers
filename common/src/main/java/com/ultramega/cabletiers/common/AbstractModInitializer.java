@@ -6,6 +6,7 @@ import com.ultramega.cabletiers.common.autocrafting.sidedinput.SidedInputCodecs;
 import com.ultramega.cabletiers.common.autocrafting.sidedinput.SidedInputPatternState;
 import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridContainerMenu;
 import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridData;
+import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridItem;
 import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridState;
 import com.ultramega.cabletiers.common.constructordestructor.TieredConstructorContainerMenu;
 import com.ultramega.cabletiers.common.constructordestructor.TieredDestructorContainerMenu;
@@ -37,6 +38,7 @@ import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerD
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -78,6 +80,37 @@ public class AbstractModInitializer {
             Blocks.INSTANCE.getTieredAutocrafters(tier).registerItems(callback, Items.INSTANCE::addTieredAutocrafters);
             callback.register(ContentIds.getContentId(tier, CableType.INTERFACE), () -> Blocks.INSTANCE.getTieredInterfaces(tier).get().createBlockItem());
         }
+        Items.INSTANCE.setWirelessCraftingGrid(
+            callback.register(ContentIds.WIRELESS_CRAFTING_GRID, () -> new WirelessCraftingGridItem(
+                false,
+                RefinedStorageApi.INSTANCE.getEnergyItemHelper(),
+                RefinedStorageApi.INSTANCE.getNetworkItemHelper()
+            ))
+        );
+            //) {
+            //    @Override
+            //    public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+            //                                               final ItemStack newStack,
+            //                                               final boolean slotChanged) {
+            //        return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
+            //    }
+            //})
+        Items.INSTANCE.setCreativeWirelessCraftingGrid(
+            callback.register(ContentIds.CREATIVE_WIRELESS_CRAFTING_GRID, () -> new WirelessCraftingGridItem(
+                true,
+                RefinedStorageApi.INSTANCE.getEnergyItemHelper(),
+                RefinedStorageApi.INSTANCE.getNetworkItemHelper()
+            ))
+        );
+            //) {
+            //    @Override
+            //    public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+            //                                               final ItemStack newStack,
+            //                                               final boolean slotChanged) {
+            //        return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
+            //    }
+            //})
+
         //Items.INSTANCE.setWirelessPatternGrid(
         //    callback.register(
         //        ContentIds.WIRELESS_PATTERN_GRID,

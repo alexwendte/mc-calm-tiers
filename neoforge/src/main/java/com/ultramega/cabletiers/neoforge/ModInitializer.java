@@ -1,8 +1,11 @@
 package com.ultramega.cabletiers.neoforge;
 
+import com.refinedmods.refinedstorage.neoforge.support.energy.EnergyStorageEnergyHandlerAdapter;
+import com.refinedmods.refinedstorage.neoforge.support.energy.ItemAccessEnergyItemContext;
 import com.ultramega.cabletiers.common.AbstractModInitializer;
 import com.ultramega.cabletiers.common.CableTiers;
 import com.ultramega.cabletiers.common.Platform;
+import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridItem;
 import com.ultramega.cabletiers.common.packet.c2s.ChangeAdvancedResourceSlotPacket;
 import com.ultramega.cabletiers.common.packet.c2s.RequestSidedResourcesPacket;
 import com.ultramega.cabletiers.common.packet.c2s.SetAdvancedFilterPacket;
@@ -17,6 +20,7 @@ import com.ultramega.cabletiers.common.packet.s2c.TieredAutocrafterNameUpdatePac
 import com.ultramega.cabletiers.common.packet.s2c.UpdateAdvancedFilterPacket;
 import com.ultramega.cabletiers.common.registry.BlockEntities;
 import com.ultramega.cabletiers.common.registry.CreativeModeTabItems;
+import com.ultramega.cabletiers.common.registry.Items;
 import com.ultramega.cabletiers.common.storage.diskinterface.AbstractTieredDiskInterfaceBlockEntity;
 import com.ultramega.cabletiers.common.utils.BlockEntityProviders;
 import com.ultramega.cabletiers.common.utils.BlockEntityTierProvider;
@@ -249,6 +253,18 @@ public class ModInitializer extends AbstractModInitializer {
                 }
             }
         }
+
+        registerEnergyItemProviders(event);
+    }
+
+    private void registerEnergyItemProviders(final RegisterCapabilitiesEvent event) {
+        event.registerItem(
+            Capabilities.Energy.ITEM,
+            (stack, ctx) -> new EnergyStorageEnergyHandlerAdapter(
+                WirelessCraftingGridItem.createEnergyStorage(stack, new ItemAccessEnergyItemContext(ctx))
+            ),
+            Items.INSTANCE.getWirelessCraftingGrid()
+        );
     }
 
     private void registerNetworkNodeContainerProvider(
