@@ -63,9 +63,7 @@ val modVersion: String by project
 refinedarchitect {
     modId = "cabletiers"
     version = modVersion
-    neoForge {
-        setAccessTransformers(file("src/main/resources/META-INF/accesstransformer.cfg"))
-    }
+    neoForge()
     dataGeneration(project(":common"))
 }
 
