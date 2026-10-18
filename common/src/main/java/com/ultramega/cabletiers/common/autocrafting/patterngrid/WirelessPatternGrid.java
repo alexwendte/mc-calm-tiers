@@ -28,21 +28,46 @@ import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.api.storage.root.FuzzyRootStorage;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemContext;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
+import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
+import com.refinedmods.refinedstorage.common.api.support.slotreference.PlayerSlotReference;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.*;
 import com.refinedmods.refinedstorage.common.grid.FuzzyGridOperations;
+import com.refinedmods.refinedstorage.common.grid.GridData;
 import com.refinedmods.refinedstorage.common.grid.SecuredGridOperations;
+import com.refinedmods.refinedstorage.common.support.FilteredContainer;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrix;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
+import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ResultContainer;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.item.crafting.SmithingRecipeInput;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 class WirelessPatternGrid implements Grid {
+    /*
+     * BEGIN Grid interface implementation
+     */
     private final NetworkItemContext context;
     private final GridWatcherManager watchers = new GridWatcherManagerImpl();
 
-    WirelessPatternGrid(final NetworkItemContext context) {
+    private final Level level;
+    private final PlayerSlotReference playerSlotReference;
+
+    WirelessPatternGrid(final Player player, final NetworkItemContext context,
+                        final PlayerSlotReference playerSlotReference) {
+        this.level = player.level();
+        this.playerSlotReference = playerSlotReference;
         this.context = context;
     }
 
@@ -192,4 +217,152 @@ class WirelessPatternGrid implements Grid {
         return getAutocrafting().flatMap(
             autocrafting -> autocrafting.startTask(resource, amount, actor, notify, cancellationToken));
     }
+    /*
+      END Grid interface implementation
+     */
+
+    /*
+      BEGIN PatternGrid implementation
+     */
+    private static final String TAG_CRAFTING_INPUT = "crafting_input";
+    private static final String TAG_PATTERN_INPUT = "pattern_input";
+    private static final String TAG_PATTERN_OUTPUT = "pattern_output";
+    private static final String TAG_PROCESSING_INPUT = "processing_input";
+    private static final String TAG_PROCESSING_INPUT_ALLOWED_TAG_IDS = "processing_input_allowed_tag_ids";
+    private static final String TAG_PROCESSING_OUTPUT = "processing_output";
+    private static final String TAG_FUZZY_MODE = "fuzzy_mode";
+    private static final String TAG_PATTERN_TYPE = "processing";
+    private static final String TAG_STONECUTTER_INPUT = "stonecutter_input";
+    private static final String TAG_STONECUTTER_SELECTED_RECIPE = "stonecutter_selected_recipe";
+    private static final String TAG_SMITHING_INPUT = "smithing_input";
+
+    private final RecipeMatrix<CraftingRecipe, CraftingInput> craftingRecipe = RecipeMatrix.crafting(
+        this::setChanged,
+        this::getLevel
+    );
+    private final ProcessingMatrixInputResourceContainer processingInput = createProcessingMatrixInputContainer();
+    private final ResourceContainer processingOutput = createProcessingMatrixOutputContainer();
+    // TODO don't want this because of the BlockEntity
+    private final FilteredContainer patternInput = new FilteredContainer(1, PatternGridBlockEntity::isValidPattern) {
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            // TODO not sure wha to replace this with
+            // PatternGridBlockEntity.this.setChanged();
+        }
+    };
+    private final FilteredContainer patternOutput = new PatternOutputContainer() {
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            // TODO not sure wha to replace this with
+            // PatternGridBlockEntity.this.setChanged();
+        }
+    };
+    private final StonecutterInputContainer stonecutterInput = new StonecutterInputContainer(this::getLevel) {
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            // TODO not sure what to replace this with
+            // PatternGridBlockEntity.this.setChanged();
+        }
+    };
+    private final RecipeMatrix<SmithingRecipe, SmithingRecipeInput> smithingTableRecipe = RecipeMatrix.smithingTable(
+        this::setChanged,
+        this::getLevel
+    );
+
+    private boolean fuzzyMode;
+    private PatternType patternType = PatternType.CRAFTING;
+
+    RecipeMatrixContainer getCraftingMatrix() {
+        return craftingRecipe.getMatrix();
+    }
+
+    ResultContainer getCraftingResult() {
+        return craftingRecipe.getResult();
+    }
+
+    ProcessingMatrixInputResourceContainer getProcessingInput() {
+        return processingInput;
+    }
+
+    ResourceContainer getProcessingOutput() {
+        return processingOutput;
+    }
+
+    public FilteredContainer getPatternInput() {
+        return patternInput;
+    }
+
+    FilteredContainer getPatternOutput() {
+        return patternOutput;
+    }
+
+    StonecutterInputContainer getStonecutterInput() {
+        return stonecutterInput;
+    }
+
+    int getStonecutterSelectedRecipe() {
+        return stonecutterInput.getSelectedRecipe();
+    }
+
+    void setStonecutterSelectedRecipe(final int index) {
+        stonecutterInput.setSelectedRecipe(index);
+        setChanged();
+    }
+
+    RecipeMatrixContainer getSmithingTableMatrix() {
+        return smithingTableRecipe.getMatrix();
+    }
+
+    ResultContainer getSmithingTableResult() {
+        return smithingTableRecipe.getResult();
+    }
+
+    boolean isFuzzyMode() {
+        return fuzzyMode;
+    }
+
+    PatternType getPatternType() {
+        return patternType;
+    }
+
+    void setFuzzyMode(final boolean fuzzyMode) {
+        this.fuzzyMode = fuzzyMode;
+        setChanged();
+    }
+
+    void setPatternType(final PatternType patternType) {
+        this.patternType = patternType;
+        setChanged();
+    }
+
+    /*
+      END PatternGrid implementation
+     */
+
+
+
+    /*
+      BEGIN PatternGrid adapter from BlockEntity
+     */
+
+    // TODO not sure what to replace this with - this comes from AbstractBlockEntity so we may need to maintain this some other way
+    public void setChanged() {
+        // Override to bypass BlockEntity#setChanged: we don't need to call Level#updateNeighbourForOutputSignal
+        // as we do not use any redstone related block state properties and do not need the performance hit
+        // of looking them up.
+        //if (level != null) {
+        //    level.blockEntityChanged(worldPosition);
+        //}
+    }
+
+    Level getLevel() {
+        return level;
+    }
+
+    /*
+      END PatternGrid adapter from BlockEntity
+     */
 }

@@ -63,7 +63,9 @@ val modVersion: String by project
 refinedarchitect {
     modId = "cabletiers"
     version = modVersion
-    neoForge()
+    neoForge {
+        setAccessTransformers(file("src/main/resources/META-INF/accesstransformer.cfg"))
+    }
     dataGeneration(project(":common"))
 }
 
@@ -82,6 +84,7 @@ val industrialForegoingVersion: String by project
 val industrialForegoingSoulsVersion: String by project
 val jadeVersionNeoForge: String by project
 val jeiVersion: String by project
+//val configuredFileId: String by project
 
 val commonJava by configurations.existing
 val commonResources by configurations.existing
@@ -102,6 +105,6 @@ dependencies {
 //    implementation("com.buuz135:industrialforegoing:1.21-${industrialForegoingVersion}")
 //    implementation("curse.maven:industrial-foregoing-souls-904394:${industrialForegoingSoulsVersion}")
     runtimeOnly("maven.modrinth:jade:${jadeVersionNeoForge}+neoforge");
-    runtimeOnly("mezz.jei:jei-${minecraftVersion}-neoforge:${jeiVersion}")
+    runtimeOnly("mezz.jei:jei-${minecraftVersion}-neoforge:${jeiVersion}");
+//    runtimeOnly("curse.maven:configured-457570:${configuredFileId}");
 }
-
