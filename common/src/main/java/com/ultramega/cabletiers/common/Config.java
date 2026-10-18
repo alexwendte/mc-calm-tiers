@@ -15,6 +15,8 @@ public interface Config {
 
     SimpleTieredInterfaceEntry getTieredInterfaces();
 
+    WirelessCraftingGridEntry getWirelessCraftingGrid();
+
     interface SimpleTieredStackEnergyEntry extends SimpleTieredEnergyEntry {
         boolean hasStackUpgradeIntegrated(CableTiers tier);
     }
@@ -36,5 +38,19 @@ public interface Config {
 
     interface SimpleTieredEnergyEntry {
         long getEnergyUsage(CableTiers tier);
+    }
+
+    interface WirelessCraftingGridEntry {
+        long getEnergyCapacity();
+
+        long getOpenEnergyUsage();
+
+        long getCraftingEnergyUsage();
+
+        long getAutocraftingEnergyUsage();
+
+        long getClearMatrixEnergyUsage();
+
+        long getRecipeTransferEnergyUsage();
     }
 }

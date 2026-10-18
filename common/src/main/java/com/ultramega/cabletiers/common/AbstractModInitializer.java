@@ -2,9 +2,6 @@ package com.ultramega.cabletiers.common;
 
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterBlockEntity;
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterContainerMenu;
-import com.ultramega.cabletiers.common.autocrafting.patterngrid.WirelessPatternGridContainerMenu;
-import com.ultramega.cabletiers.common.autocrafting.patterngrid.WirelessPatternGridData;
-import com.ultramega.cabletiers.common.autocrafting.patterngrid.WirelessPatternGridItem;
 import com.ultramega.cabletiers.common.autocrafting.sidedinput.SidedInputCodecs;
 import com.ultramega.cabletiers.common.autocrafting.sidedinput.SidedInputPatternState;
 import com.ultramega.cabletiers.common.constructordestructor.TieredConstructorContainerMenu;

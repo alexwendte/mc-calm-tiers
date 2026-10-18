@@ -1,10 +1,7 @@
 package com.ultramega.cabletiers.common.registry;
 
-import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorContainerMenu;
-import com.refinedmods.refinedstorage.common.autocrafting.monitor.WirelessAutocraftingMonitorContainerMenu;
 import com.ultramega.cabletiers.common.CableTiers;
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterContainerMenu;
-import com.ultramega.cabletiers.common.autocrafting.patterngrid.WirelessPatternGridContainerMenu;
 import com.ultramega.cabletiers.common.constructordestructor.TieredConstructorContainerMenu;
 import com.ultramega.cabletiers.common.constructordestructor.TieredDestructorContainerMenu;
 import com.ultramega.cabletiers.common.exporter.TieredExporterContainerMenu;
