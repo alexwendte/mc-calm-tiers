@@ -38,7 +38,7 @@ public class WirelessPatternGridItem extends AbstractNetworkEnergyItem {
     public static EnergyStorage createEnergyStorage(final ItemStack stack, final EnergyItemContext context) {
         final EnergyStorage energyStorage = new EnergyStorageImpl(
             Math.clamp(
-                Platform.getConfig().getWirelessCraftingGrid().getEnergyCapacity(),
+                Platform.getConfig().getWirelessPatternGrid().getEnergyCapacity(),
                 1,
                 Long.MAX_VALUE
             )

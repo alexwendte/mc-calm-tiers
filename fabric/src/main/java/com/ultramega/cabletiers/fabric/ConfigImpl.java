@@ -38,6 +38,8 @@ public class ConfigImpl implements ConfigData, com.ultramega.cabletiers.common.C
     @ConfigEntry.Gui.CollapsibleObject
     private WirelessCraftingGridEntryEntryImpl wirelessCraftingGrid = new WirelessCraftingGridEntryEntryImpl();
 
+    private WirelessPatternGridEntryEntryImpl wirelessPatternGrid = new WirelessPatternGridEntryEntryImpl();
+
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
     }
@@ -80,6 +82,11 @@ public class ConfigImpl implements ConfigData, com.ultramega.cabletiers.common.C
     @Override
     public WirelessCraftingGridEntry getWirelessCraftingGrid() {
         return wirelessCraftingGrid;
+    }
+
+    @Override
+    public WirelessPatternGridEntry getWirelessPatternGrid() {
+        return wirelessPatternGrid;
     }
 
     private static class SimpleTieredStackEntryImpl implements SimpleTieredStackEntry {
@@ -338,6 +345,46 @@ public class ConfigImpl implements ConfigData, com.ultramega.cabletiers.common.C
         private long autocraftingEnergyUsage = DefaultEnergyUsage.WIRELESS_CRAFTING_GRID_AUTOCRAFTING;
         private long clearMatrixEnergyUsage = DefaultEnergyUsage.WIRELESS_CRAFTING_GRID_CLEAR_MATRIX;
         private long recipeTransferEnergyUsage = DefaultEnergyUsage.WIRELESS_CRAFTING_GRID_RECIPE_TRANSFER;
+
+        @Override
+        public long getEnergyCapacity() {
+            return energyCapacity;
+        }
+
+        @Override
+        public long getOpenEnergyUsage() {
+            return openEnergyUsage;
+        }
+
+        @Override
+        public long getCraftingEnergyUsage() {
+            return craftingEnergyUsage;
+        }
+
+        @Override
+        public long getAutocraftingEnergyUsage() {
+            return autocraftingEnergyUsage;
+        }
+
+        @Override
+        public long getClearMatrixEnergyUsage() {
+            return clearMatrixEnergyUsage;
+        }
+
+        @Override
+        public long getRecipeTransferEnergyUsage() {
+            return recipeTransferEnergyUsage;
+        }
+    }
+
+    private static class WirelessPatternGridEntryEntryImpl implements WirelessPatternGridEntry {
+        @ConfigEntry.BoundedDiscrete(min = 1L, max = Long.MAX_VALUE)
+        private long energyCapacity = DefaultEnergyUsage.WIRELESS_PATTERN_GRID_CAPACITY;
+        private long openEnergyUsage = DefaultEnergyUsage.WIRELESS_PATTERN_GRID_OPEN;
+        private long craftingEnergyUsage = DefaultEnergyUsage.WIRELESS_PATTERN_GRID_CRAFTING;
+        private long autocraftingEnergyUsage = DefaultEnergyUsage.WIRELESS_PATTERN_GRID_AUTOCRAFTING;
+        private long clearMatrixEnergyUsage = DefaultEnergyUsage.WIRELESS_PATTERN_GRID_CLEAR_MATRIX;
+        private long recipeTransferEnergyUsage = DefaultEnergyUsage.WIRELESS_PATTERN_GRID_RECIPE_TRANSFER;
 
         @Override
         public long getEnergyCapacity() {

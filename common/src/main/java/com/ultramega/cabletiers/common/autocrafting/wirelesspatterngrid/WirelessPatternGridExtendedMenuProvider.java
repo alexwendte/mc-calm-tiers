@@ -1,7 +1,7 @@
 package com.ultramega.cabletiers.common.autocrafting.wirelesspatterngrid;
 
+import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.PlayerSlotReference;
-import com.refinedmods.refinedstorage.common.grid.CraftingGrid;
 import com.refinedmods.refinedstorage.common.grid.GridData;
 import com.refinedmods.refinedstorage.common.support.containermenu.ExtendedMenuProvider;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -13,21 +13,21 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 
 public class WirelessPatternGridExtendedMenuProvider implements ExtendedMenuProvider<WirelessPatternGridData> {
     private final Component name;
-    private final CraftingGrid craftingGrid;
+    private final Grid grid;
     private final PlayerSlotReference playerSlotReference;
 
     WirelessPatternGridExtendedMenuProvider(final Component name,
-                                            final CraftingGrid craftingGrid,
+                                            final Grid grid,
                                             final PlayerSlotReference playerSlotReference) {
         this.name = name;
-        this.craftingGrid = craftingGrid;
+        this.grid = grid;
         this.playerSlotReference = playerSlotReference;
     }
 
     @Override
     public WirelessPatternGridData getMenuData() {
         return new WirelessPatternGridData(
-            GridData.of(craftingGrid),
+            GridData.of(grid),
             playerSlotReference
         );
     }
@@ -45,6 +45,6 @@ public class WirelessPatternGridExtendedMenuProvider implements ExtendedMenuProv
 
     @Override
     public AbstractContainerMenu createMenu(final int syncId, final Inventory inventory, final Player player) {
-        return new WirelessPatternGridContainerMenu(syncId, inventory, craftingGrid, playerSlotReference);
+        return new WirelessPatternGridContainerMenu(syncId, inventory, grid, playerSlotReference);
     }
 }

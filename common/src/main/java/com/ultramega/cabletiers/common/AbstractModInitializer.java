@@ -8,6 +8,8 @@ import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.Wireles
 import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridData;
 import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridItem;
 import com.ultramega.cabletiers.common.autocrafting.wirelesscraftinggrid.WirelessCraftingGridState;
+import com.ultramega.cabletiers.common.autocrafting.wirelesspatterngrid.WirelessPatternGridContainerMenu;
+import com.ultramega.cabletiers.common.autocrafting.wirelesspatterngrid.WirelessPatternGridData;
 import com.ultramega.cabletiers.common.constructordestructor.TieredConstructorContainerMenu;
 import com.ultramega.cabletiers.common.constructordestructor.TieredDestructorContainerMenu;
 import com.ultramega.cabletiers.common.exporter.TieredExporterContainerMenu;
@@ -209,10 +211,13 @@ public class AbstractModInitializer {
             )
         ));
 
-        //Menus.INSTANCE.setWirelessPatternGrid(callback.register(
-        //    ContentIds.WIRELESS_PATTERN_GRID,
-        //    () -> extendedMenuTypeFactory.create(WirelessPatternGridContainerMenu::new, WirelessPatternGridData.STREAM_CODEC)
-        //));
+        Menus.INSTANCE.setWirelessPatternGrid(callback.register(
+            ContentIds.WIRELESS_CRAFTING_GRID,
+            () -> extendedMenuTypeFactory.create(
+                WirelessPatternGridContainerMenu::new,
+                WirelessPatternGridData.STREAM_CODEC
+            )
+        ));
     }
 
     protected final void registerDataComponents(final RegistryCallback<DataComponentType<?>> callback) {

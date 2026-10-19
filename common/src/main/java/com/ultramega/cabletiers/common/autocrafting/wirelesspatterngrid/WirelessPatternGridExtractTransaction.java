@@ -26,6 +26,6 @@ class WirelessPatternGridExtractTransaction implements ExtractTransaction {
     @Override
     public void close() {
         delegate.close();
-        context.drainEnergy(Platform.getConfig().getWirelessCraftingGrid().getCraftingEnergyUsage());
+        context.drainEnergy(Platform.getConfig().getWirelessPatternGrid().getCraftingEnergyUsage());
     }
 }

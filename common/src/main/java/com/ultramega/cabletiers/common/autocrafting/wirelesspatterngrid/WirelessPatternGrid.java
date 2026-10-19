@@ -98,7 +98,7 @@ class WirelessPatternGrid implements CraftingGrid {
     /// @param recipeMatrix     this represents the actual recipeMatrix matrix (3x3 grid) shown to the user. We need to populate it with the items stored in the wireless crafting grid's state, which is stored in the wirelessGridItem's data component
     private static void setRecipeMatrixSlots(final ItemStack wirelessGridItem,
                                              final RecipeMatrix<CraftingRecipe, CraftingInput> recipeMatrix) {
-        final WirelessPatternGridState state = wirelessGridItem.get(DataComponents.INSTANCE.getWirelessCraftingGridState());
+        final WirelessPatternGridState state = wirelessGridItem.get(DataComponents.INSTANCE.getWirelessPatternGridState());
         if (state == null) {
             return;
         }
@@ -125,7 +125,7 @@ class WirelessPatternGrid implements CraftingGrid {
         }
         final CraftingInput.Positioned input = recipeMatrix.getMatrix().asPositionedCraftInput();
         final ItemStack wirelessGridItem = playerSlotReference.get(player);
-        wirelessGridItem.set(DataComponents.INSTANCE.getWirelessCraftingGridState(), new WirelessPatternGridState(input));
+        wirelessGridItem.set(DataComponents.INSTANCE.getWirelessPatternGridState(), new WirelessPatternGridState(input));
     }
 
     private Optional<StorageNetworkComponent> getStorage() {
@@ -209,7 +209,7 @@ class WirelessPatternGrid implements CraftingGrid {
             ? getCraftingMatrix().clearToPlayerInventory(player)
             : clearMatrixIntoStorage(player);
         if (success) {
-            context.drainEnergy(Platform.getConfig().getWirelessCraftingGrid().getClearMatrixEnergyUsage());
+            context.drainEnergy(Platform.getConfig().getWirelessPatternGrid().getClearMatrixEnergyUsage());
         }
         return success;
     }
@@ -233,7 +233,7 @@ class WirelessPatternGrid implements CraftingGrid {
     /// @param recipe
     @Override
     public void transferRecipe(final Player player, final List<List<ItemResource>> recipe) {
-        context.drainEnergy(Platform.getConfig().getWirelessCraftingGrid().getRecipeTransferEnergyUsage());
+        context.drainEnergy(Platform.getConfig().getWirelessPatternGrid().getRecipeTransferEnergyUsage());
         getCraftingMatrix().transferRecipe(
             player,
             getNetworkForActiveGrid().map(network -> network.getComponent(StorageNetworkComponent.class))
@@ -276,7 +276,7 @@ class WirelessPatternGrid implements CraftingGrid {
     /// @param actorType
     @Override
     public void addWatcher(final GridWatcher watcher, final Class<? extends Actor> actorType) {
-        context.drainEnergy(Platform.getConfig().getWirelessCraftingGrid().getOpenEnergyUsage());
+        context.drainEnergy(Platform.getConfig().getWirelessPatternGrid().getOpenEnergyUsage());
         final Optional<Network> optionalNetwork = context.resolveNetwork();
         final StorageNetworkComponent storage = optionalNetwork
             .map(network -> network.getComponent(StorageNetworkComponent.class))
@@ -469,7 +469,7 @@ class WirelessPatternGrid implements CraftingGrid {
         return getAutocrafting()
             .map(autocrafting -> autocrafting.startTask(resourceKey, amount, actor, notify, cancellationToken))
             .flatMap(taskId -> {
-                context.drainEnergy(Platform.getConfig().getWirelessCraftingGrid().getAutocraftingEnergyUsage());
+                context.drainEnergy(Platform.getConfig().getWirelessPatternGrid().getAutocraftingEnergyUsage());
                 return taskId;
             });
 

@@ -1,6 +1,7 @@
 package com.ultramega.cabletiers.common;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridScreen;
 import com.refinedmods.refinedstorage.common.grid.screen.CraftingGridScreen;
 import com.refinedmods.refinedstorage.common.grid.screen.GridScreen;
 import com.ultramega.cabletiers.common.advancedfilter.AdvancedFilterScreen;
@@ -56,7 +57,7 @@ public abstract class AbstractClientModInitializer {
 
         registration.register(Menus.INSTANCE.getWirelessCraftingGrid(), CraftingGridScreen::new);
 
-        //registration.register(Menus.INSTANCE.getWirelessPatternGrid(), GridScreen<WirelessPatternGridContainerMenu>::new);
+        registration.register(Menus.INSTANCE.getWirelessPatternGrid(), PatternGridScreen::new);
     }
 
     public static void openAdvancedFilterScreen(final int slotIndex,

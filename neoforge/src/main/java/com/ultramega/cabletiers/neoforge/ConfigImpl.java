@@ -14,6 +14,7 @@ public class ConfigImpl implements Config {
     private final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
     private final ModConfigSpec spec;
     private final WirelessCraftingGridEntry wirelessCraftingGrid;
+    private final WirelessPatternGridEntry wirelessPatternGrid;
 
     private final SimpleTieredStackEntry tieredImporters;
     private final SimpleTieredStackEntry tieredExporters;
@@ -32,6 +33,7 @@ public class ConfigImpl implements Config {
         this.tieredAutocrafters = new SimpleTieredAutocrafterEntryImpl("tieredAutocrafters", CableType.AUTOCRAFTER);
         this.tieredInterfaces = new SimpleTieredInterfaceEntryImpl("tieredInterfaces", CableType.INTERFACE);
         wirelessCraftingGrid = new WirelessCraftingGridEntryImpl();
+        wirelessPatternGrid = new WirelessPatternGridEntryImpl();
         this.spec = this.builder.build();
     }
 
@@ -77,6 +79,11 @@ public class ConfigImpl implements Config {
     @Override
     public WirelessCraftingGridEntry getWirelessCraftingGrid() {
         return wirelessCraftingGrid;
+    }
+
+    @Override
+    public WirelessPatternGridEntry getWirelessPatternGrid() {
+        return wirelessPatternGrid;
     }
 
     private static String translationKey(final String value) {
@@ -319,6 +326,72 @@ public class ConfigImpl implements Config {
             recipeTransferEnergyUsage = builder
                 .translation(translationKey("wirelessCraftingGrid.recipeTransferEnergyUsage"))
                 .defineInRange("recipeTransferEnergyUsage", DefaultEnergyUsage.WIRELESS_CRAFTING_GRID_RECIPE_TRANSFER,
+                    0, Long.MAX_VALUE);
+            builder.pop();
+        }
+
+        @Override
+        public long getEnergyCapacity() {
+            return energyCapacity.get();
+        }
+
+        @Override
+        public long getOpenEnergyUsage() {
+            return openEnergyUsage.get();
+        }
+
+        @Override
+        public long getCraftingEnergyUsage() {
+            return craftingEnergyUsage.get();
+        }
+
+        @Override
+        public long getAutocraftingEnergyUsage() {
+            return autocraftingEnergyUsage.get();
+        }
+
+        @Override
+        public long getClearMatrixEnergyUsage() {
+            return clearMatrixEnergyUsage.get();
+        }
+
+        @Override
+        public long getRecipeTransferEnergyUsage() {
+            return recipeTransferEnergyUsage.get();
+        }
+    }
+
+    private class WirelessPatternGridEntryImpl implements WirelessPatternGridEntry {
+        private final ModConfigSpec.LongValue energyCapacity;
+        private final ModConfigSpec.LongValue openEnergyUsage;
+        private final ModConfigSpec.LongValue craftingEnergyUsage;
+        private final ModConfigSpec.LongValue autocraftingEnergyUsage;
+        private final ModConfigSpec.LongValue clearMatrixEnergyUsage;
+        private final ModConfigSpec.LongValue recipeTransferEnergyUsage;
+
+        WirelessPatternGridEntryImpl() {
+            builder.translation(translationKey("wirelessPatternGrid")).push("wirelessPatternGrid");
+            energyCapacity = builder
+                .translation(translationKey("wirelessPatternGrid.energyCapacity"))
+                .defineInRange("energyCapacity", DefaultEnergyUsage.WIRELESS_PATTERN_GRID_CAPACITY, 1, Long.MAX_VALUE);
+            openEnergyUsage = builder
+                .translation(translationKey("wirelessPatternGrid.openEnergyUsage"))
+                .defineInRange("openEnergyUsage", DefaultEnergyUsage.WIRELESS_PATTERN_GRID_OPEN, 0, Long.MAX_VALUE);
+            craftingEnergyUsage = builder
+                .translation(translationKey("wirelessPatternGrid.craftingEnergyUsage"))
+                .defineInRange("craftingEnergyUsage", DefaultEnergyUsage.WIRELESS_PATTERN_GRID_CRAFTING, 0,
+                    Long.MAX_VALUE);
+            autocraftingEnergyUsage = builder
+                .translation(translationKey("wirelessPatternGrid.autocraftingEnergyUsage"))
+                .defineInRange("autocraftingEnergyUsage", DefaultEnergyUsage.WIRELESS_PATTERN_GRID_AUTOCRAFTING, 0,
+                    Long.MAX_VALUE);
+            clearMatrixEnergyUsage = builder
+                .translation(translationKey("wirelessPatternGrid.clearMatrixEnergyUsage"))
+                .defineInRange("clearMatrixEnergyUsage", DefaultEnergyUsage.WIRELESS_PATTERN_GRID_CLEAR_MATRIX, 0,
+                    Long.MAX_VALUE);
+            recipeTransferEnergyUsage = builder
+                .translation(translationKey("wirelessPatternGrid.recipeTransferEnergyUsage"))
+                .defineInRange("recipeTransferEnergyUsage", DefaultEnergyUsage.WIRELESS_PATTERN_GRID_RECIPE_TRANSFER,
                     0, Long.MAX_VALUE);
             builder.pop();
         }
