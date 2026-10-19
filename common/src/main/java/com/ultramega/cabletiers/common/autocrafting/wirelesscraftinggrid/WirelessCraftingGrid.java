@@ -87,7 +87,7 @@ class WirelessCraftingGrid implements CraftingGrid {
         // get the wireless crafting grid item from the player's inventory
         final ItemStack wirelessGridItem = playerSlotReference.get(player);
         // update the crafting grid matrix with the items stored in the wireless crafting grid's state
-        setMatrixSlots(wirelessGridItem, recipeMatrix);
+        setRecipeMatrixSlots(wirelessGridItem, recipeMatrix);
         return recipeMatrix;
     }
 
@@ -96,8 +96,8 @@ class WirelessCraftingGrid implements CraftingGrid {
     ///
     /// @param wirelessGridItem this represents the wireless crafting grid itself. any items in the crafting grid are stored in the wireless crafting grid's state, which is stored in the wirelessGridItem's data component
     /// @param recipeMatrix     this represents the actual recipeMatrix matrix (3x3 grid) shown to the user. We need to populate it with the items stored in the wireless crafting grid's state, which is stored in the wirelessGridItem's data component
-    private static void setMatrixSlots(final ItemStack wirelessGridItem,
-                                       final RecipeMatrix<CraftingRecipe, CraftingInput> recipeMatrix) {
+    private static void setRecipeMatrixSlots(final ItemStack wirelessGridItem,
+                                             final RecipeMatrix<CraftingRecipe, CraftingInput> recipeMatrix) {
         final WirelessCraftingGridState state = wirelessGridItem.get(DataComponents.INSTANCE.getWirelessCraftingGridState());
         if (state == null) {
             return;
