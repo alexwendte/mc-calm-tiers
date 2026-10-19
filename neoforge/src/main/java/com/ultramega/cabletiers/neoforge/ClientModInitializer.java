@@ -1,5 +1,6 @@
 package com.ultramega.cabletiers.neoforge;
 
+import com.refinedmods.refinedstorage.common.grid.screen.CraftingGridScreen;
 import com.ultramega.cabletiers.common.AbstractClientModInitializer;
 import com.ultramega.cabletiers.common.CableTiers;
 import com.ultramega.cabletiers.common.registry.BlockEntities;

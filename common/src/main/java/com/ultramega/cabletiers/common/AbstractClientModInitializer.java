@@ -1,6 +1,7 @@
 package com.ultramega.cabletiers.common;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.grid.screen.CraftingGridScreen;
 import com.refinedmods.refinedstorage.common.grid.screen.GridScreen;
 import com.ultramega.cabletiers.common.advancedfilter.AdvancedFilterScreen;
 import com.ultramega.cabletiers.common.autocrafting.autocrafter.TieredAutocrafterContainerMenu;
@@ -52,6 +53,8 @@ public abstract class AbstractClientModInitializer {
                 (containerMenu, inventory, title) ->
                     new TieredInterfaceScreen(containerMenu, inventory, title, tier));
         }
+
+        registration.register(Menus.INSTANCE.getWirelessCraftingGrid(), CraftingGridScreen::new);
 
         //registration.register(Menus.INSTANCE.getWirelessPatternGrid(), GridScreen<WirelessPatternGridContainerMenu>::new);
     }

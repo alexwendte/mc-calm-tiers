@@ -223,12 +223,12 @@ public class AbstractModInitializer {
                     .networkSynchronized(SidedInputCodecs.SIDED_INPUT_STREAM_CODEC)
                     .build()));
 
-        DataComponents.INSTANCE.setWirelessCraftingGridState(callback.register(
-            createCableTiersIdentifier("wireless_crafting_grid_state"),
-            () -> DataComponentType.<WirelessCraftingGridState>builder()
-                .persistent(WirelessCraftingGridState.CODEC)
-                .networkSynchronized(WirelessCraftingGridState.STREAM_CODEC)
-                .build()));
+        DataComponents.INSTANCE.setWirelessCraftingGridState(
+            callback.register(createCableTiersIdentifier("wireless_crafting_grid_state"),
+                () -> DataComponentType.<WirelessCraftingGridState>builder()
+                    .persistent(WirelessCraftingGridState.CODEC)
+                    .networkSynchronized(WirelessCraftingGridState.STREAM_CODEC)
+                    .build()));
     }
 
     protected final void registerUpgradeMappings() {
