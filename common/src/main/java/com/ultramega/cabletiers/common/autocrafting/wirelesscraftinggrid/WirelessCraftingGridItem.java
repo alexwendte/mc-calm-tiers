@@ -52,8 +52,12 @@ public class WirelessCraftingGridItem extends AbstractNetworkEnergyItem {
                        final ServerPlayer player,
                        final PlayerSlotReference playerSlotReference,
                        final NetworkItemContext context) {
-        // I assume that this context.resolveNetwork is what checks if we are in range or not? It is `NetworkItemContext`
-        // how does it know if we are using creative grid or not? Or maybe a creative grid doesn't have unlimited range?
+
+        // `context.resolveNetwork` checks if
+        //   1. the item is bound (via NetworkItemContextImpl.resolveNetwork)
+        //   2. the network is chunk loaded (via NetworkItemContextImpl.resolveNetwork)
+        //   3. the network is in the same dimension (via NetworkItemPlayerValidator.isValid)
+        //   4. the network is in range (via NetworkItemPlayerValidator.isValid)
         final boolean isAllowed = context.resolveNetwork()
             .map(network -> SecurityHelper.isAllowed(player, BuiltinPermission.OPEN, network))
             .orElse(true);
@@ -66,8 +70,8 @@ public class WirelessCraftingGridItem extends AbstractNetworkEnergyItem {
             name,
             creative ? ContentNames.CREATIVE_WIRELESS_CRAFTING_GRID : ContentNames.WIRELESS_CRAFTING_GRID
         );
-        final var provider = new WirelessCraftingGridExtendedMenuProvider(correctedName, craftingGrid,
+        final var menuProvider = new WirelessCraftingGridExtendedMenuProvider(correctedName, craftingGrid,
             playerSlotReference);
-        com.refinedmods.refinedstorage.common.Platform.INSTANCE.getMenuOpener().openMenu(player, provider);
+        com.refinedmods.refinedstorage.common.Platform.INSTANCE.getMenuOpener().openMenu(player, menuProvider);
     }
 }

@@ -46,10 +46,13 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 
 import static java.util.Objects.requireNonNull;
 
 class WirelessCraftingGrid implements CraftingGrid {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final NetworkItemContext context;
     private final Level level;
     private final GridWatcherManager watchers = new GridWatcherManagerImpl();
@@ -148,7 +151,6 @@ class WirelessCraftingGrid implements CraftingGrid {
         return context.resolveNetwork();
     }
 
-    /// @return
     @Override
     public RecipeMatrixContainer getCraftingMatrix() {
         return requireNonNull(recipeMatrix).getMatrix();
@@ -156,7 +158,6 @@ class WirelessCraftingGrid implements CraftingGrid {
 
     /// Simply returns the crafting result which is maintained in RecipeMatrix
     ///
-    /// @return
     @Override
     public ResultContainer getCraftingResult() {
         return requireNonNull(recipeMatrix).getResult();
@@ -166,7 +167,6 @@ class WirelessCraftingGrid implements CraftingGrid {
     ///
     /// @param player
     /// @param craftingInput
-    /// @return
     @Override
     public NonNullList<ItemStack> getRemainingItems(final Player player, final CraftingInput craftingInput) {
         return requireNonNull(recipeMatrix).getRemainingItems(level, player, craftingInput);
@@ -177,7 +177,6 @@ class WirelessCraftingGrid implements CraftingGrid {
     ///
     /// @param player
     /// @param directCommit
-    /// @return
     @Override
     public ExtractTransaction startExtractTransaction(final Player player, final boolean directCommit) {
         return getNetworkForActiveGrid()
@@ -204,7 +203,6 @@ class WirelessCraftingGrid implements CraftingGrid {
     ///
     /// @param player
     /// @param toPlayerInventory
-    /// @return
     @Override
     public boolean clearMatrix(final Player player, final boolean toPlayerInventory) {
         final boolean success = toPlayerInventory
@@ -302,35 +300,54 @@ class WirelessCraftingGrid implements CraftingGrid {
         watchers.removeWatcher(watcher, storage, autocrafting);
     }
 
-    /// @return
     @Override
     public Storage getItemStorage() {
         return getStorage().map(Storage.class::cast).orElseGet(NoopStorage::new);
     }
 
-    // networkActive is checking whether the connected network has energy or
-    // whether energy is not required in the config
-    // if the network couldn't be resolve then we are out of range and the grid is not active
-    // context.isActive() potentially checks if the item has energy & is bound to a network/in range (but can't be for sure)
-
-    /// @return
+    /// `context.resolveNetwork` checks for A LOT of things spelled out below
+    /// `context.isActive` checks if the item has energy
     @Override
     public boolean isGridActive() {
-        final boolean networkActive = context.resolveNetwork()
-            .map(network -> !RefinedStorageApi.INSTANCE.isEnergyRequired()
-                || network.getComponent(EnergyNetworkComponent.class).getStored() > 0)
+        // `context.resolveNetwork` checks if
+        //   1. the item is bound (via NetworkItemContextImpl.resolveNetwork)
+        //   2. the network is chunk loaded (via NetworkItemContextImpl.resolveNetwork)
+        //   3. the network is in the same dimension (via NetworkItemPlayerValidator.isValid)
+        //   4. the network is in range (via NetworkItemPlayerValidator.isValid)
+        var networkOpt = context.resolveNetwork();
+        boolean isNetworkResolvable = networkOpt.isPresent();
+
+        boolean networkHasEnergy = networkOpt
+            .map(network -> network.getComponent(EnergyNetworkComponent.class).getStored() > 0)
             .orElse(false);
-        return networkActive && context.isActive();
+
+        // checks if energy is required & if the network has energy
+        boolean networkActive = !RefinedStorageApi.INSTANCE.isEnergyRequired() || networkHasEnergy;
+
+        // checks if energy is required & if the item has energy
+        boolean contextIsActive = context.isActive();
+
+        //LOGGER.info("isGridActive: isNetworkResolvable={}, networkHasEnergy={}, contextIsActive={}",
+        //    isNetworkResolvable, networkHasEnergy, contextIsActive);
+
+        return networkActive && contextIsActive;
     }
 
+    //@Override
+    //public boolean isGridActive() {
+    //    final boolean networkActive = context.resolveNetwork()
+    //        .map(network -> !RefinedStorageApi.INSTANCE.isEnergyRequired()
+    //            || network.getComponent(EnergyNetworkComponent.class).getStored() > 0)
+    //        .orElse(false);
+    //    return networkActive && context.isActive();
+    //}
+
     /// @param actorType
-    /// @return
     @Override
     public List<TrackedResourceAmount> getResources(final Class<? extends Actor> actorType) {
         return getStorage().map(storage -> storage.getResources(actorType)).orElse(Collections.emptyList());
     }
 
-    /// @return
     @Override
     public Set<PlatformResourceKey> getAutocraftableResources() {
         return getAutocrafting()
@@ -342,7 +359,6 @@ class WirelessCraftingGrid implements CraftingGrid {
             .orElse(Collections.emptySet());
     }
 
-    /// @return
     @Override
     public Map<PlatformResourceKey, Set<TaskId>> getCurrentlyAutocrafting() {
         return getAutocrafting().map(autocrafting -> autocrafting
@@ -356,7 +372,6 @@ class WirelessCraftingGrid implements CraftingGrid {
     }
 
     /// @param taskIds
-    /// @return
     @Override
     public List<TaskStatus> getAutocraftingTaskStatuses(final Set<TaskId> taskIds) {
         return getAutocrafting().map(autocrafting -> autocrafting
@@ -374,7 +389,6 @@ class WirelessCraftingGrid implements CraftingGrid {
     ///
     /// @param resourceType
     /// @param player
-    /// @return
     @Override
     public GridOperations createOperations(final ResourceType resourceType, final ServerPlayer player) {
         return getStorage()
@@ -385,7 +399,6 @@ class WirelessCraftingGrid implements CraftingGrid {
     }
 
     /// @param player
-    /// @return
     @Override
     public boolean canMenuStayOpen(Player player) {
         return true;
@@ -408,7 +421,6 @@ class WirelessCraftingGrid implements CraftingGrid {
     /// @param resource
     /// @param amount
     /// @param cancellationToken
-    /// @return
     @Override
     public CompletableFuture<Optional<Preview>> getPreview(final ResourceKey resource, final long amount, final CancellationToken cancellationToken) {
         return getAutocrafting()
@@ -421,7 +433,6 @@ class WirelessCraftingGrid implements CraftingGrid {
     /// @param resource
     /// @param amount
     /// @param cancellationToken
-    /// @return
     @Override
     public CompletableFuture<Optional<TreePreview>> getTreePreview(final ResourceKey resource, final long amount,
                                                                    final CancellationToken cancellationToken) {
@@ -434,7 +445,6 @@ class WirelessCraftingGrid implements CraftingGrid {
     ///
     /// @param resource
     /// @param cancellationToken
-    /// @return
     @Override
     public CompletableFuture<Long> getMaxAmount(final ResourceKey resource, final CancellationToken cancellationToken) {
         return getAutocrafting()
@@ -445,13 +455,11 @@ class WirelessCraftingGrid implements CraftingGrid {
 
     /// Kicks off an autocrafting task for the given resource and amount
     /// If the task is successfully started, it drains energy from the wireless crafting grid item
-
     /// @param resourceKey
     /// @param amount
     /// @param actor
     /// @param notify
     /// @param cancellationToken
-    /// @return
     @Override
     public Optional<TaskId> startTask(final ResourceKey resourceKey,
                                       final long amount,

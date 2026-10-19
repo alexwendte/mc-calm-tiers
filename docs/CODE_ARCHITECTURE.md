@@ -1,3 +1,20 @@
+<!-- TOC -->
+  * [🛠️ File List Architecture Breakdown](#-file-list-architecture-breakdown)
+    * [1. `WirelessPatternGridData.java`](#1-wirelesspatterngriddatajava)
+    * [2. `WirelessPatternGrid.java`](#2-wirelesspatterngridjava)
+    * [3. `WirelessPatternGridOperations.java`](#3-wirelesspatterngridoperationsjava)
+    * [4. `WirelessPatternGridContainerMenu.java`](#4-wirelesspatterngridcontainermenujava)
+    * [5. `WirelessPatternGridExtendedMenuProvider.java`](#5-wirelesspatterngridextendedmenuproviderjava)
+    * [6. `WirelessPatternGridItem.java`](#6-wirelesspatterngriditemjava)
+  * [📋 Step-by-Step Implementation Strategy](#-step-by-step-implementation-strategy)
+    * [Step 1: Clean up `WirelessPatternGridData`](#step-1-clean-up-wirelesspatterngriddata)
+    * [Step 2: Implement `WirelessPatternGrid` (The Core Engine)](#step-2-implement-wirelesspatterngrid-the-core-engine)
+    * [Step 3: Wire up `WirelessPatternGridContainerMenu`](#step-3-wire-up-wirelesspatterngridcontainermenu)
+    * [Step 4: Hook up `WirelessPatternGridItem` & ExtendedMenuProvider](#step-4-hook-up-wirelesspatterngriditem--extendedmenuprovider)
+  * [💡 What about `WirelessPatternGridScreen` on the Client?](#-what-about-wirelesspatterngridscreen-on-the-client)
+<!-- TOC -->
+
+
 Here is the complete step-by-step breakdown of what to extend, what to implement, and how to structure all the files in
 your `patterngrid` package.
 
@@ -97,89 +114,54 @@ into your wireless class.
 
 ---
 
-## 📋 Step-by-Step Implementation Strategy
+## Wireless Crafting Grid
 
-### Step 1: Clean up `WirelessPatternGridData`
+### 1. When is the `NetworkItemContext` Created, and Is It Recreated?
 
-Ensure it cleanly wraps Refined Storage's `PatternGridData`:
+**Yes, it gets recreated every single time.**
 
-```java
-public record WirelessPatternGridData(
-    PatternGridData patternGridData,
-    PlayerSlotReference playerSlotReference
-) {
-    public static final StreamCodec<RegistryFriendlyByteBuf, WirelessPatternGridData> STREAM_CODEC = StreamCodec.composite(
-        PatternGridData.STREAM_CODEC,
-        WirelessPatternGridData::patternGridData,
-        PlayerSlotReference.STREAM_CODEC,
-        WirelessPatternGridData::playerSlotReference,
-        WirelessPatternGridData::new
-    );
-}
+A new instance of `NetworkItemContext` is instantiated **fresh on demand** every time the player right-clicks and triggers the item.
 
-```
+The lifecycle works as follows:
 
-### Step 2: Implement `WirelessPatternGrid` (The Core Engine)
-
-Because `PatternGridContainerMenu` expects container slots for pattern inputs/outputs and recipe matrices, instantiate
-these container fields inside `WirelessPatternGrid`:
-
-* `FilteredContainer patternInput` (for blank patterns)
-* `PatternOutputContainer patternOutput` (for encoded patterns)
-* `RecipeMatrixContainer craftingMatrix` (3x3 crafting grid)
-* `ResultContainer craftingResult`
-* `RecipeMatrixContainer processingInput` / `processingOutput`
-
-### Step 3: Wire up `WirelessPatternGridContainerMenu`
-
-Extend `PatternGridContainerMenu` and use `WirelessPatternGridData` for client-side menu creation:
-
-```java
-public class WirelessPatternGridContainerMenu extends PatternGridContainerMenu {
-    private final PlayerSlotReference playerSlotReference;
-
-    // Client/Packet Constructor
-    public WirelessPatternGridContainerMenu(final int syncId,
-                                            final Inventory playerInventory,
-                                            final WirelessPatternGridData data) {
-        super(syncId, playerInventory, data.patternGridData());
-        this.playerSlotReference = data.playerSlotReference();
-        this.disabledSlot = data.playerSlotReference();
-    }
-
-    // Server Constructor
-    public WirelessPatternGridContainerMenu(final int syncId,
-                                            final Inventory playerInventory,
-                                            final WirelessPatternGrid wirelessPatternGrid,
-                                            final PlayerSlotReference playerSlotReference) {
-        // Pass the server backing grid's PatternGridData payload to super
-        super(syncId, playerInventory, wirelessPatternGrid.createPatternGridData());
-        this.playerSlotReference = playerSlotReference;
-        this.disabledSlot = playerSlotReference;
-    }
-}
-
-```
-
-### Step 4: Hook up `WirelessPatternGridItem` & ExtendedMenuProvider
-
-In `use()`, retrieve the `Network` using Refined Storage's network binding helper, construct `WirelessPatternGrid`, and
-open the menu using `WirelessPatternGridExtendedMenuProvider`.
+1. **The Trigger:** When a player right-clicks the `WirelessCraftingGridItem`, NeoForge invokes `AbstractNetworkEnergyItem#use(Level, Player, InteractionHand)` on the server thread.
+2. **The Factory Call:** The abstract base class creates a `PlayerSlotReference` pointing to the exact inventory slot or hand holding the item, and immediately calls `RefinedStorageApi.INSTANCE.getNetworkItemHelper().createContext(stack, player, playerSlotReference)`.
+3. **The Lifecycle Scope:** This `NetworkItemContext` is a **transient, request-scoped object**. It lives only for the duration of that specific interaction tick—used to validate permissions, resolve the bound network, and instantiate the menu provider—and then it is discarded. It is *not* a persistent singleton or stored directly on the item stack. Instead, it reads its backing data (such as the bound network UUID) dynamically from the `ItemStack`'s data components whenever methods like `resolveNetwork()` are called.
 
 ---
 
-## 💡 What about `WirelessPatternGridScreen` on the Client?
+### 2. Under-the-Hood Wiring & Execution Flow
 
-You don't need a custom screen class! In your client setup, simply map `Menus.INSTANCE.getWirelessPatternGrid()`
-directly to Refined Storage's `PatternGridScreen::new`:
+To trace how everything connects from a right-click to an open GUI menu, here is the architectural data flow:
 
-```java
-event.register(
-    Menus.INSTANCE.getWirelessPatternGrid(),
-
-PatternGridScreen::new
-    );
+```
+[Player Right-Clicks Item]
+       │
+       ▼
+[AbstractNetworkEnergyItem#use(...)] (Server Side)
+       │
+       ├──> 1. Creates PlayerSlotReference (tracks slot/hand index)
+       ├──> 2. Creates NetworkItemContext (reads bound network ID from ItemStack components)
+       │
+       ▼
+[WirelessCraftingGridItem#use(...)] (Subclass Override)
+       │
+       ├──> 3. Resolves Network via context.resolveNetwork()
+       ├──> 4. Validates Security via SecurityHelper.isAllowed(player, OPEN, network)
+       ├──> 5. Instantiates WirelessCraftingGrid (implements CraftingGrid)
+       ├──> 6. Instantiates WirelessCraftingGridExtendedMenuProvider
+       │
+       ▼
+[Platform.getMenuOpener().openMenu(...)]
+       │
+       ├──> Serializes ExtendedMenuProvider data payload (PlayerSlotReference, etc.)
+       └──> Opens container menu on Server & syncs payload to Client
 
 ```
 
-Which class in the list above would you like to build out first?
+#### Detailed Component Breakdown:
+
+* **`PlayerSlotReference`**: Encapsulates *where* the item lives (e.g., main inventory slot vs. curios slot vs. offhand). This allows the network item and its underlying energy storage to interact with the exact `ItemStack` instance in the player's inventory even if it moves or updates while the menu is open.
+* **`NetworkItemContext`**: Acts as a bridge between the physical `ItemStack` and the server-side `NetworkManager`. It encapsulates network resolution logic (checking if the bound network exists, is chunk-loaded, is in the correct dimension, and is within range via `NetworkItemPlayerValidator`).
+* **`CraftingGrid` (`WirelessCraftingGrid`)**: Manages the grid inventory state, recipe matrix, and synchronization back to the Refined Storage network grid crafting inventory handlers. It takes the `context` and `playerSlotReference` so that operations (like extracting items or crafting) can drain energy from the correct item stack via `EnergyItemContext`.
+* **`ExtendedMenuProvider` & Menu Opener**: NeoForge’s extended menu system allows passing custom synchronization data (the `PlayerSlotReference` payload) from the server to the client-side screen (`AbstractContainerScreen`) when the container opens. This ensures that the client-side GUI knows exactly which item instance it is interacting with.
